@@ -27,7 +27,7 @@
   }
 
 
-  .textarea {
+  .textarea, .textarea-withtheme {
     background-color: var(--figma-color-bg-secondary);
     border: 2px solid var(--figma-color-border);
     color: var(--figma-color-text-secondary);
@@ -39,25 +39,26 @@
     white-space: pre;
   }
 
-  .textarea {
+  .textarea, .textarea-withtheme {
     display: block;
     width: 100%;
   }
 
-  .textarea.copied {
+  .textarea.copied, .textarea-withtheme.copied {
     background-color: #baffea;
   }
 
 </style>
 <main>
   <div class="textarea"></div>
+  <div class="textarea-withtheme"></div>
 </main>
 <script>
-  function unsecuredCopyToClipboard(text) {
-    document.querySelector(".textarea").classList.add('copied');
+  function unsecuredCopyToClipboard(element) {
+    element.classList.add('copied');
     // Create a textarea element
     const textArea = document.createElement('textarea');
-    textArea.value = text;
+    textArea.value = element.innerHTML;
     document.body.appendChild(textArea);
 
     // Focus and select the textarea content
@@ -74,16 +75,20 @@
     // Remove the textarea element from the DOM
     document.body.removeChild(textArea);
     setTimeout(() => {
-      document.querySelector(".textarea").classList.remove('copied');
+      element.classList.remove('copied');
     }, 3000);
   }
   window.onmessage = ({ data: { pluginMessage } }) => {
     if (pluginMessage.type === "EXPORT_RESULT") {
-      document.querySelector(".textarea").innerHTML = pluginMessage.code;
+      document.querySelector(".textarea-withtheme").innerHTML = pluginMessage.code;
+      document.querySelector(".textarea").innerHTML = pluginMessage.codeNoTheme;
     }
   };
   document.querySelector(".textarea").addEventListener('click', (e) => {
-    unsecuredCopyToClipboard(document.querySelector(".textarea").innerHTML);
+    unsecuredCopyToClipboard(document.querySelector(".textarea"));
+  });
+  document.querySelector(".textarea-withtheme").addEventListener('click', (e) => {
+    unsecuredCopyToClipboard(document.querySelector(".textarea-withtheme"));
   });
   document.getElementById("export").addEventListener("click", () => {
     parent.postMessage({ pluginMessage: { type: "NODE-EXPORT" } }, "*");

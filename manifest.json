@@ -11,6 +11,7 @@
     "figma",
     "dev"
   ],
+  "documentAccess": "dynamic-page",
   "codegenLanguages": [
     {"label": "ColibriUI", "value": "colibri"}
   ],
@@ -21,10 +22,12 @@
   },
   "menu": [
     { "command": "export", "name": "Export Theme" },
-    { "command": "node-export", "name": "Export Node Styles" }
+    { "command": "node-export", "name": "Export Node Styles" },
+    { "command": "settings", "name": "Plugin settings" }
   ],
   "ui": { 
     "export": "export.html", 
-    "node-export": "node-export.html" 
+    "node-export": "node-export.html", 
+    "settings": "settings.html" 
   }
 }

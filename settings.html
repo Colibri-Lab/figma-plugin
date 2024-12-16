@@ -72,20 +72,20 @@
   }
 </style>
 <main>
-  <button id="export" type="button">Export node styles</button>
-  <textarea
-    placeholder="Exported variables will render here..."
-    readonly
-  ></textarea>
+  <input type=text name="theme" placeholder="theme name" />
+  <button id="save" type="button">Save</button>
 </main>
 <script>
   window.onmessage = ({ data: { pluginMessage } }) => {
-    if (pluginMessage.type === "EXPORT_RESULT") {
-      document.querySelector("textarea").innerHTML = pluginMessage.code;
+    console.log(pluginMessage);
+    if (pluginMessage.type === "SETTINGS") {
+      document.querySelector('input').value = pluginMessage.settings.themeName;
     }
   };
-  document.getElementById("export").addEventListener("click", () => {
-    parent.postMessage({ pluginMessage: { type: "NODE-EXPORT" } }, "*");
+  document.getElementById("save").addEventListener("click", () => {
+    const themeName = document.querySelector('input').value;
+    const settings = {themeName: themeName};
+    parent.postMessage({ pluginMessage: { type: "SAVE-SETTINGS", settings: settings } }, "*");
   });
   
 </script>

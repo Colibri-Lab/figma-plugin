@@ -1,0 +1,30 @@
+{
+  "name": "Export Colibri UI Theme",
+  "id": "1260241250003644310",
+  "api": "1.0.0",
+  "main": "code.js",
+  "enableProposedApi": false,
+  "capabilities": [
+    "codegen"
+  ],
+  "editorType": [
+    "figma",
+    "dev"
+  ],
+  "codegenLanguages": [
+    {"label": "ColibriUI", "value": "colibri"}
+  ],
+  "networkAccess": {
+    "allowedDomains": [
+      "none"
+    ]
+  },
+  "menu": [
+    { "command": "export", "name": "Export Theme" },
+    { "command": "node-export", "name": "Export Node Styles" }
+  ],
+  "ui": { 
+    "export": "export.html", 
+    "node-export": "node-export.html" 
+  }
+}

@@ -23,11 +23,18 @@
   "menu": [
     { "command": "export", "name": "Export Theme" },
     { "command": "node-export", "name": "Export Node Styles" },
+    {"separator": true},
+    { "command": "sidebar", "name": "Open sidebar" },
+    {"separator": true},
     { "command": "settings", "name": "Plugin settings" }
   ],
   "ui": { 
     "export": "export.html", 
     "node-export": "node-export.html", 
-    "settings": "settings.html" 
-  }
+    "settings": "settings.html", 
+    "sidebar": "sidebar.html" 
+  },
+  "relaunchButtons": [
+    {"command": "export", "name": "Export the node styles"}
+  ]
 }

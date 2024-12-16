@@ -1,0 +1,92 @@
+<style>
+  :root {
+    --spacing: 0.8rem;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    background-color: var(--figma-color-bg);
+    color: var(--figma-color-text);
+    margin: 0;
+    padding: 0px;
+  }
+
+  html,
+  body,
+  main {
+    height: 100%;
+  }
+
+  main {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+  }
+
+
+  .textarea {
+    background-color: var(--figma-color-bg-secondary);
+    border: 2px solid var(--figma-color-border);
+    color: var(--figma-color-text-secondary);
+    flex: 1;
+    font-family: Andale Mono, monospace;
+    font-size: 0.9rem;
+    overflow: auto;
+    padding: var(--spacing);
+    white-space: pre;
+  }
+
+  .textarea {
+    display: block;
+    width: 100%;
+  }
+
+  .textarea.copied {
+    background-color: #baffea;
+  }
+
+</style>
+<main>
+  <div class="textarea"></div>
+</main>
+<script>
+  function unsecuredCopyToClipboard(text) {
+    document.querySelector(".textarea").classList.add('copied');
+    // Create a textarea element
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    document.body.appendChild(textArea);
+
+    // Focus and select the textarea content
+    textArea.focus();
+    textArea.select();
+
+    // Attempt to copy the text to the clipboard
+    try {
+      document.execCommand('copy');
+    } catch (e) {
+      logger.error('Unable to copy content to clipboard!', e);
+    }
+
+    // Remove the textarea element from the DOM
+    document.body.removeChild(textArea);
+    setTimeout(() => {
+      document.querySelector(".textarea").classList.remove('copied');
+    }, 3000);
+  }
+  window.onmessage = ({ data: { pluginMessage } }) => {
+    if (pluginMessage.type === "EXPORT_RESULT") {
+      document.querySelector(".textarea").innerHTML = pluginMessage.code;
+    }
+  };
+  document.querySelector(".textarea").addEventListener('click', (e) => {
+    unsecuredCopyToClipboard(document.querySelector(".textarea").innerHTML);
+  });
+  document.getElementById("export").addEventListener("click", () => {
+    parent.postMessage({ pluginMessage: { type: "NODE-EXPORT" } }, "*");
+  });
+  
+</script>

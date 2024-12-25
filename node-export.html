@@ -70,6 +70,10 @@
   #export {
     background-color: var(--figma-color-bg-component);
   }
+  textarea.copied {
+    background-color: #baffea;
+  }
+
 </style>
 <main>
   <button id="export" type="button">Export node styles</button>
@@ -86,6 +90,33 @@
   };
   document.getElementById("export").addEventListener("click", () => {
     parent.postMessage({ pluginMessage: { type: "NODE-EXPORT" } }, "*");
+  });
+  function unsecuredCopyToClipboard(element) {
+    element.classList.add('copied');
+    // Create a textarea element
+    const textArea = document.createElement('textarea');
+    textArea.value = element.innerHTML;
+    document.body.appendChild(textArea);
+
+    // Focus and select the textarea content
+    textArea.focus();
+    textArea.select();
+
+    // Attempt to copy the text to the clipboard
+    try {
+      document.execCommand('copy');
+    } catch (e) {
+      logger.error('Unable to copy content to clipboard!', e);
+    }
+
+    // Remove the textarea element from the DOM
+    document.body.removeChild(textArea);
+    setTimeout(() => {
+      element.classList.remove('copied');
+    }, 3000);
+  }
+  document.querySelector("textarea").addEventListener('click', (e) => {
+    unsecuredCopyToClipboard(document.querySelector("textarea"));
   });
   
 </script>

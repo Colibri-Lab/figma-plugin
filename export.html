@@ -23,7 +23,15 @@
   main {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing);
+    gap: 5px;
+  }
+
+  h3 {
+    font-family: Andale Mono, monospace;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 0px;
+    margin: 0px;
   }
 
   button {
@@ -32,7 +40,8 @@
     padding: var(--spacing);
   }
 
-  textarea {
+  textarea,
+  select {
     background-color: var(--figma-color-bg-secondary);
     border: 2px solid var(--figma-color-border);
     color: var(--figma-color-text-secondary);
@@ -43,6 +52,7 @@
     padding: var(--spacing);
     white-space: pre;
   }
+
   textarea:focus {
     border-color: var(--figma-color-border-selected);
     outline: none;
@@ -67,21 +77,107 @@
   #export {
     background-color: var(--figma-color-bg-component);
   }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    grid-template-rows: 1fr;
+    gap: 20px;
+    height: 100%;
+    width: 100%;
+  }
+  .left {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+  .right {
+    width: 100%;
+    height: 100%;
+  }
+  .right textarea {
+    height: 100%;
+  }
+  .left select {
+    height: calc(100% - 45px);
+  }
+  textarea.copied {
+    background-color: #baffea;
+  }
 </style>
 <main>
-  <button id="export" type="button">Export Variables</button>
-  <textarea
-    placeholder="Exported variables will render here..."
-    readonly
-  ></textarea>
+  <h3>Choose modes to export (use Ctrl key to multiselect)</h3>
+  <div class="grid">
+    <div class="left">
+      <select id="modes" multiple>
+
+      </select>
+      <button id="export" type="button">Export Variables</button>    
+    </div>
+    <div class="right">
+      <textarea placeholder="Exported variables will render here..." readonly></textarea>
+    </div>
+  </div>
 </main>
 <script>
+  function unsecuredCopyToClipboard(element) {
+    element.classList.add('copied');
+    // Create a textarea element
+    const textArea = document.createElement('textarea');
+    textArea.value = element.innerHTML;
+    document.body.appendChild(textArea);
+
+    // Focus and select the textarea content
+    textArea.focus();
+    textArea.select();
+
+    // Attempt to copy the text to the clipboard
+    try {
+      document.execCommand('copy');
+    } catch (e) {
+      logger.error('Unable to copy content to clipboard!', e);
+    }
+
+    // Remove the textarea element from the DOM
+    document.body.removeChild(textArea);
+    setTimeout(() => {
+      element.classList.remove('copied');
+    }, 3000);
+  }
+  document.querySelector("textarea").addEventListener('click', (e) => {
+    unsecuredCopyToClipboard(document.querySelector("textarea"));
+  });
   window.onmessage = ({ data: { pluginMessage } }) => {
     if (pluginMessage.type === "EXPORT_RESULT") {
       document.querySelector("textarea").innerHTML = pluginMessage.code;
     }
+    if (pluginMessage.type === "MODES") {
+      const selector = document.querySelector("select");
+      for (const collection of pluginMessage.collections) {
+        const optGroup = document.createElement('optgroup');
+        optGroup.label = collection.name;
+        for (const mode of collection.modes) {
+          const option = document.createElement('option');
+          option.value = mode.modeId;
+          option.innerHTML = mode.name;
+          option.selected = true;
+          optGroup.appendChild(option);
+        }
+        selector.appendChild(optGroup)
+      }
+    }
   };
   document.getElementById("export").addEventListener("click", () => {
-    parent.postMessage({ pluginMessage: { type: "EXPORT" } }, "*");
+    const modes = [];
+    const modeNodes = document.querySelectorAll("select optgroup option");
+    modeNodes.forEach((node) => {
+      if (node.selected) {
+        modes.push(node.value);
+      }
+    });
+    parent.postMessage({ pluginMessage: { type: "EXPORT", modes: modes } }, "*");
   });
+
 </script>
